@@ -1,0 +1,38 @@
+CHANGE REQUEST for To_Do_Manager
+
+CURRENT STATE:
+Phase 1 is complete: the authoring bundle and Flows Create_To_Do, List_To_Dos, Complete_To_Do are deployed and tested. The agent is NOT published or activated.
+Commit the current state to git before changing anything.
+
+WHAT CHANGED:
+The requester now wants users to (1) set a priority when creating a to-do, and (2) reschedule an existing to-do to a new due date.
+
+WHAT TO CHANGE:
+Router: update to_do_management description to include rescheduling tasks.
+Data model: add Priority (standard Task field; values: High, Normal, Low). Optional, default Normal.
+Action 1 — Create_To_Do: add optional input Priority. If not provided, set Priority = "Normal".
+New Action 4 — Reschedule_To_Do | Flow name: Reschedule_To_Do | Inputs: Subject (required, to find the task), ActivityDate (required, new due date) | Updates the matching open Task's ActivityDate.
+Subagent instructions, add:
+- For Create_To_Do: do not ask for Priority unless the user mentions it.
+- For Reschedule_To_Do: call it as soon as you have the task and the new date.
+- If more than one open task matches the Subject, list them and ask which one.
+Off-topic handler: no change.
+
+WHAT MUST NOT CHANGE:
+Do not modify List_To_Dos or Complete_To_Do.
+Do not rename the agent, subagent, or existing actions.
+Keep all original Flow XML rules and the no-service-boilerplate rule.
+
+IMPACT CHECK — before writing anything, tell me:
+1. Every file you will create or modify.
+2. Any existing behavior that could break.
+3. Any ambiguity, with the assumption you'd make.
+
+DEPLOYMENT (only what changed, in order):
+sf agent validate authoring-bundle --json --api-name To_Do_Manager
+sf project deploy start --json --metadata Flow:Create_To_Do --metadata Flow:Reschedule_To_Do
+sf project deploy start --json --metadata AiAuthoringBundle:To_Do_Manager
+If any step fails, stop, show me the exact error, and propose a fix.
+
+Stop after deployment. Do NOT publish or activate.
+Present the plan and impact check first. Do not modify files until I approve.
