@@ -1,0 +1,45 @@
+I want to build an Agentforce {{Employee|Service}} Agent called '{{Agent Label}}' that helps {{who}} {{do what}} using {{object(s)}}.
+
+Here is the full specification. Build exactly this — do not add extra subagents, do not create custom objects or fields unless listed below, and do not include any service agent boilerplate like default_agent_user, MessagingSession variables, or escalation subagents.
+[If Service Agent: delete the boilerplate clause and specify which of those you DO want.]
+
+AGENT ARCHITECTURE:
+Type: AgentforceEmployeeAgent
+API name: {{Agent_Api_Name}}
+One start_agent router
+Subagents: {{subagent_1}}[, {{subagent_2}}...]
+One off-topic handler: off_topic
+
+ROUTER DESCRIPTION: The router should classify user intent into one of these paths:
+{{subagent_1}}: route here for {{...}}
+off_topic: route here for anything unrelated to {{domain}}
+
+DATA MODEL: Use the {{standard|custom}} {{Object}} object. The relevant fields are:
+{{Field_API_Name}} ({{meaning}}; values: {{picklist values if any}})
+...
+
+SUBAGENT: {{subagent_1}} — {{purpose}}. Each action is backed by a separate Auto-launched Flow:
+Action N — {{Action_Name}} | Flow name: {{Flow_Name}} | Inputs: {{X}} (required), {{Y}} (optional) | {{What it does / returns}}
+
+SUBAGENT INSTRUCTIONS for {{subagent_1}}:
+Always call the appropriate action immediately when the user's intent is clear.
+Do not ask for optional fields unless the user offers them.
+For {{Action}}: call it as soon as you have {{required inputs}}.
+If an action returns no results, say so plainly and suggest what the user can do next.
+If more than one record matches, list the matches and ask the user which one.
+
+OFF_TOPIC HANDLER: Politely tell the user this agent only helps with {{domain}}, and decline to answer anything else.
+
+FLOWS: Each flow should be an Auto-launched Flow with no trigger. Use Assignment elements to copy SObject field values into intermediate String variables before using them — do not chain SObject field references directly. Group all elements of the same type together contiguously in the XML rather than interleaving them — Salesforce's Flow XML schema rejects interleaved element types. All element X coordinates must be 0 or greater.
+
+DEPLOYMENT (Phase 1 — build, validate, and deploy only), in this order:
+sf agent validate authoring-bundle --json --api-name {{Agent_Api_Name}}
+[Only if needed:] sf project deploy start --json --metadata CustomObject:{{Obj__c}} --metadata CustomField:{{Obj__c.Field__c}}
+[Only if needed:] sf project deploy start --json --metadata ApexClass:{{ClassName}}
+sf project deploy start --json --metadata Flow:{{Flow_1}} --metadata Flow:{{Flow_2}} --metadata Flow:{{Flow_3}}
+sf project deploy start --json --metadata AiAuthoringBundle:{{Agent_Api_Name}}
+If any step fails, stop, show me the exact error, and propose a fix before retrying.
+
+Stop after Phase 1 completes. Do NOT run sf agent publish or sf agent activate yet — I want to test the agent against the deployed bundle first.
+
+Before writing any files, read the agentforce-generate skill's reference files to confirm exact current syntax. Present a plan first. Do not generate files until I approve.
