@@ -1,0 +1,19 @@
+I want you to test against the deployed bundle with live actions. Run quick smoke tests with preview sessions. 
+
+When done, summarize the results of the tests.
+
+Yes, deploy the flows and re run the complete path test
+
+Publish and activate my To Do agent.
+
+Great. Perform batch regression tests with test specs and summarize the results of the tests.
+
+
+
+Teste le bundle déployé avec les actions réelles. Lance des smoke tests rapides avec des sessions de preview. Tous les messages de test doivent être en français, comme un vrai utilisateur francophone. Vérifie aussi que chaque réponse de l'agent est en français. Résume ensuite les résultats.
+
+Oui, déploie les flows et relance le test du parcours complet, en français.
+
+Publie et active mon agent.
+
+Parfait. Lance des tests de régression en lot avec des test specs. Écris les énoncés de test en français ; garde les noms de sous-agents et d'actions attendus exactement comme leurs noms API. Résume les résultats.
