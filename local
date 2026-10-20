@@ -6,3 +6,8 @@ mkdir -p ~/Projects/MyProject
 unzip ~/Downloads/MyProject.zip -d ~/Projects/MyProject
 Open the folder in VS
 install the skills 
+
+
+
+sf org login web --alias MyOrg
+
