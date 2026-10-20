@@ -1,0 +1,8 @@
+Vibes IDE
+zip -r /tmp/MyProject.zip . -x ".git/*" ".sf/*" ".sfdx/*" "node_modules/*"
+cp /tmp/MyProject.zip ~/dx-project/MyProject.zip
+Mac
+mkdir -p ~/Projects/MyProject
+unzip ~/Downloads/MyProject.zip -d ~/Projects/MyProject
+Open the folder in VS
+install the skills 
