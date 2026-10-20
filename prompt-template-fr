@@ -1,0 +1,52 @@
+Je veux créer un agent Agentforce {{Employee|Service}} nommé '{{Libellé de l'agent}}' qui aide {{qui}} à {{faire quoi}} à partir de {{objet(s)}}.
+
+Voici la spécification complète. Construis exactement ceci : n'ajoute pas de sous-agents supplémentaires, ne crée pas d'objets ou de champs personnalisés sauf ceux listés ci-dessous, et n'inclus aucun élément standard des agents de service comme default_agent_user, les variables MessagingSession ou les sous-agents d'escalade.
+[Si Service Agent : supprime cette clause et précise lesquels de ces éléments tu VEUX.]
+
+ARCHITECTURE DE L'AGENT :
+Type : AgentforceEmployeeAgent
+Nom API : {{Agent_Api_Name}}
+Un routeur start_agent
+Sous-agents : {{subagent_1}}[, {{subagent_2}}...]
+Un gestionnaire hors sujet : off_topic
+
+LANGUE :
+Les utilisateurs finaux parlent français. Définis le français comme seule locale de l'agent dans le bloc language (vérifie le code de locale exact dans les fichiers de référence du skill) ; n'ajoute pas l'anglais.
+Tout le texte visible par l'utilisateur est en français : libellé de l'agent, libellés et descriptions des sous-agents, message off_topic et tout texte de réponse fixe.
+Tous les noms API, noms développeur, variables, noms de flows et noms de fichiers restent en anglais, en ASCII uniquement, sans accents.
+Les valeurs de liste de sélection sont utilisées exactement comme indiquées dans MODÈLE DE DONNÉES ; ne les traduis jamais.
+
+DESCRIPTION DU ROUTEUR : Le routeur doit classer l'intention de l'utilisateur dans l'un de ces chemins :
+{{subagent_1}} : à utiliser pour {{...}}
+off_topic : à utiliser pour tout ce qui ne concerne pas {{domaine}}
+
+MODÈLE DE DONNÉES : Utilise l'objet {{standard|personnalisé}} {{Objet}}. Les champs concernés sont :
+{{Field_API_Name}} ({{signification}} ; valeurs : {{valeurs de liste de sélection, le cas échéant}})
+...
+
+SOUS-AGENT : {{subagent_1}} — {{objectif}}. Chaque action repose sur un Auto-launched Flow distinct :
+Action N — {{Action_Name}} | Nom du flow : {{Flow_Name}} | Entrées : {{X}} (obligatoire), {{Y}} (facultatif) | {{Ce qu'elle fait / renvoie}}
+
+INSTRUCTIONS DU SOUS-AGENT {{subagent_1}} :
+Réponds toujours en français.
+Appelle toujours l'action appropriée immédiatement dès que l'intention de l'utilisateur est claire.
+Ne demande pas les champs facultatifs sauf si l'utilisateur les fournit de lui-même.
+Pour {{Action}} : appelle-la dès que tu as {{entrées obligatoires}}.
+Si une action ne renvoie aucun résultat, réponds : "{{Aucun résultat trouvé. Vous pouvez vérifier ... ou essayer ...}}"
+Si plusieurs enregistrements correspondent, liste-les et demande à l'utilisateur lequel il souhaite.
+
+GESTIONNAIRE OFF_TOPIC : Réponds exactement : "{{Désolé, je peux uniquement vous aider avec ... .}}" et refuse de répondre à toute autre demande.
+
+FLOWS : Chaque flow doit être un Auto-launched Flow sans déclencheur. Utilise des éléments Assignment pour copier les valeurs des champs SObject dans des variables String intermédiaires avant de les utiliser ; n'enchaîne pas directement les références aux champs SObject. Regroupe tous les éléments du même type de manière contiguë dans le XML au lieu de les entrelacer : le schéma XML des flows Salesforce rejette les types d'éléments entrelacés. Toutes les coordonnées X des éléments doivent être supérieures ou égales à 0.
+
+DÉPLOIEMENT (Phase 1 — construire, valider et déployer uniquement), dans cet ordre :
+sf agent validate authoring-bundle --json --api-name {{Agent_Api_Name}}
+[Seulement si nécessaire :] sf project deploy start --json --metadata CustomObject:{{Obj__c}} --metadata CustomField:{{Obj__c.Field__c}}
+[Seulement si nécessaire :] sf project deploy start --json --metadata ApexClass:{{ClassName}}
+sf project deploy start --json --metadata Flow:{{Flow_1}} --metadata Flow:{{Flow_2}} --metadata Flow:{{Flow_3}}
+sf project deploy start --json --metadata AiAuthoringBundle:{{Agent_Api_Name}}
+Si une étape échoue, arrête-toi, montre-moi l'erreur exacte et propose une correction avant de réessayer.
+
+Arrête-toi une fois la Phase 1 terminée. N'exécute PAS encore sf agent publish ni sf agent activate : je veux d'abord tester l'agent sur le bundle déployé.
+
+Avant d'écrire le moindre fichier, lis les fichiers de référence du skill agentforce-generate pour confirmer la syntaxe exacte actuelle. Présente d'abord un plan. Ne génère aucun fichier avant mon accord.
