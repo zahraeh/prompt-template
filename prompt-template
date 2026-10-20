@@ -10,6 +10,12 @@ One start_agent router
 Subagents: {{subagent_1}}[, {{subagent_2}}...]
 One off-topic handler: off_topic
 
+LANGUAGE:
+End users speak French. Set French as the agent's only locale in the language block (confirm the exact locale code in the skill reference files); do not add English.
+All user-facing text is in French: agent label, subagent labels and descriptions, off_topic message, and any fixed reply text.
+All API names, developer names, variables, flow names and file names stay in English, ASCII only, no accents.
+Picklist values are used exactly as listed in DATA MODEL; never translate them.
+
 ROUTER DESCRIPTION: The router should classify user intent into one of these paths:
 {{subagent_1}}: route here for {{...}}
 off_topic: route here for anything unrelated to {{domain}}
@@ -17,24 +23,19 @@ off_topic: route here for anything unrelated to {{domain}}
 DATA MODEL: Use the {{standard|custom}} {{Object}} object. The relevant fields are:
 {{Field_API_Name}} ({{meaning}}; values: {{picklist values if any}})
 ...
-LANGUAGE:
-The agent's end users speak French. Set French as the agent's default locale in the language block (confirm the exact locale code in the skill reference files). Do not add English as an additional locale.
-All user-facing text must be in French: agent and subagent labels, the off_topic message, any fixed reply text, and instructions that tell the agent what to say. Add to every subagent: "Réponds toujours en français."
-Keep all API names, developer names, variable names, flow names and file names in English, ASCII only, no accents.
-Use picklist values exactly as listed in DATA MODEL; do not translate them.
-
 
 SUBAGENT: {{subagent_1}} — {{purpose}}. Each action is backed by a separate Auto-launched Flow:
 Action N — {{Action_Name}} | Flow name: {{Flow_Name}} | Inputs: {{X}} (required), {{Y}} (optional) | {{What it does / returns}}
 
 SUBAGENT INSTRUCTIONS for {{subagent_1}}:
+Réponds toujours en français.
 Always call the appropriate action immediately when the user's intent is clear.
 Do not ask for optional fields unless the user offers them.
 For {{Action}}: call it as soon as you have {{required inputs}}.
-If an action returns no results, say so plainly and suggest what the user can do next.
+If an action returns no results, say: "{{Aucun résultat trouvé. Vous pouvez vérifier ... ou essayer ...}}"
 If more than one record matches, list the matches and ask the user which one.
 
-OFF_TOPIC HANDLER: Politely tell the user this agent only helps with {{domain}}, and decline to answer anything else.
+OFF_TOPIC HANDLER: Reply exactly: "{{Désolé, je peux uniquement vous aider avec ... .}}" and decline to answer anything else.
 
 FLOWS: Each flow should be an Auto-launched Flow with no trigger. Use Assignment elements to copy SObject field values into intermediate String variables before using them — do not chain SObject field references directly. Group all elements of the same type together contiguously in the XML rather than interleaving them — Salesforce's Flow XML schema rejects interleaved element types. All element X coordinates must be 0 or greater.
 
