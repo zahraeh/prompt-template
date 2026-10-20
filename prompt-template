@@ -17,6 +17,12 @@ off_topic: route here for anything unrelated to {{domain}}
 DATA MODEL: Use the {{standard|custom}} {{Object}} object. The relevant fields are:
 {{Field_API_Name}} ({{meaning}}; values: {{picklist values if any}})
 ...
+LANGUAGE:
+The agent's end users speak French. Set French as the agent's default locale in the language block (confirm the exact locale code in the skill reference files). Do not add English as an additional locale.
+All user-facing text must be in French: agent and subagent labels, the off_topic message, any fixed reply text, and instructions that tell the agent what to say. Add to every subagent: "Réponds toujours en français."
+Keep all API names, developer names, variable names, flow names and file names in English, ASCII only, no accents.
+Use picklist values exactly as listed in DATA MODEL; do not translate them.
+
 
 SUBAGENT: {{subagent_1}} — {{purpose}}. Each action is backed by a separate Auto-launched Flow:
 Action N — {{Action_Name}} | Flow name: {{Flow_Name}} | Inputs: {{X}} (required), {{Y}} (optional) | {{What it does / returns}}
