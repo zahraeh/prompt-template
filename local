@@ -17,3 +17,6 @@ sf sobject list --sobject all -o myOrg            # every object in the org
 sf sobject list --sobject custom -o myOrg         # only __c objects
 sf sobject describe --sobject Task -o myOrg       # fields, picklists, relationships
 
+look at what is already available 
+
+sf data query -o myOrg -q "SELECT MasterLabel, TotalLicenses FROM PermissionSetLicense ORDER BY MasterLabel"
