@@ -11,3 +11,9 @@ install the skills
 
 sf org login web --alias MyOrg
 
+
+check the objects that exist in my org 
+sf sobject list --sobject all -o myOrg            # every object in the org
+sf sobject list --sobject custom -o myOrg         # only __c objects
+sf sobject describe --sobject Task -o myOrg       # fields, picklists, relationships
+
