@@ -3,7 +3,7 @@ PHASE 0 — REUSE CHECK (read-only). Do not create, edit, or deploy anything. Do
 CHALLENGE (summary):
 {{3-6 lines: who the users are, what they need to do, which data, any constraints}}
 
-STEP 1 — Requirements. Split the challenge into atomic requirements R1..Rn (one capability each). Max 10.
+STEP 1 — Requirements. Split the challenge into atomic requirements R1..Rn (one capability each). Max 5. Prioritize the 3–5 capabilities essential to demonstrate the core user journey within a 2-hour bootcamp. Defer nice-to-have capabilities and complex integrations to a future phase.
 
 STEP 2 — Check what already exists, cheapest source first. Use .inventory/* if present; only run a command if the file is missing. Allowed commands (read-only):
 - sf data query -q "SELECT LanguageLocaleKey, OrganizationType FROM Organization"
