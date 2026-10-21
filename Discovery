@@ -1,0 +1,34 @@
+PHASE 0 — REUSE CHECK (read-only). Do not create, edit, or deploy anything. Do not run sf agent preview, sf agent test, or anything that calls the LLM in the org.
+
+CHALLENGE (summary):
+{{3-6 lines: who the users are, what they need to do, which data, any constraints}}
+
+STEP 1 — Requirements. Split the challenge into atomic requirements R1..Rn (one capability each). Max 10.
+
+STEP 2 — Check what already exists, cheapest source first. Use .inventory/* if present; only run a command if the file is missing. Allowed commands (read-only):
+- sf data query -q "SELECT LanguageLocaleKey, OrganizationType FROM Organization"
+- sf data query -q "SELECT MasterLabel FROM PermissionSetLicense WHERE Status='Active'"
+- sf data query -q "SELECT DeveloperName, MasterLabel, Type FROM BotDefinition"
+- sf data query -q "SELECT ApiName, Label, ProcessType FROM FlowDefinitionView WHERE IsActive = true"
+- sf project retrieve start -m GenAiFunction GenAiPlugin GenAiPromptTemplate ApexClass
+- grep -rl "@InvocableMethod" force-app
+- sf sobject describe --sobject <Obj> --json | jq -r '.result.fields[] | "\(.name)\t\(.type)\t\([.picklistValues[]?.value] | join("|"))"'
+  (only for objects the requirements need; never list all objects)
+Also check the agentforce-generate skill references for standard actions (query records, summarize record, knowledge answers, etc.) that could cover a requirement.
+
+STEP 3 — Output ONLY these three blocks, no prose:
+
+A) REUSE MAP — table: Req | Reuse candidate (type + API name) | Fit (full / partial / none) | What's missing
+Preference: standard action > existing active flow > invocable Apex > prompt template > new flow > new Apex. Mark standard actions "verify in Asset Library" if you can't confirm them from the org.
+
+B) DECISIONS:
+- Agent type: Employee or Service, and why (one line, from licenses and users)
+- Org locale; confirm the French locale code from the skill references
+- Objects + fields to use, exact API names and picklist values
+- Anything the challenge needs that the org lacks (license, object, field, data): flag it, don't build it
+
+C) FILLED VALUES for my build template:
+{{Agent Label}} (French), {{Agent_Api_Name}}, {{Object}}, fields list, subagents with router descriptions, and per action:
+Action_Name | REUSE <existing API name> or NEW Flow_Name | Inputs | Returns
+
+Keep the whole answer under 60 lines.
