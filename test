@@ -1,0 +1,35 @@
+Smoke test (deployed bundle, live actions):
+Use agentforce-test. Smoke-test the deployed bundle {{Agent_Api_Name}} with live actions:
+sf agent preview start --json --use-live-actions --authoring-bundle {{Agent_Api_Name}}
+Then sf agent preview send for each utterance, then sf agent preview end.
+
+Utterances are in French, as real users would write. Max 8 total:
+- 1 per action, formal: {{"Montre-moi mes tâches en retard"}}
+- 1 per action, informal or with a typo: {{"t'as quoi pour demain ?"}}
+- 1 no-result case, 1 multiple-match case
+- 1 off_topic: "Quel temps fait-il à Paris ?"
+- 1 in English, to confirm the agent still answers in French
+Ground test values with one sf data query --json -q "SELECT ... LIMIT 20" first; don't invent record names.
+
+Pass = right subagent, right action called, reply in French, fixed texts match exactly.
+Output only: table # | utterance | subagent | action | French? | PASS/FAIL | cause (if FAIL). Then a proposed fix per FAIL. Don't change files yet.
+
+Fix and re-run:
+Apply the fixes you proposed. Deploy only what changed (Flow:<Name> and/or AiAuthoringBundle:{{Agent_Api_Name}}), validate the bundle, then re-run the full smoke list from Phase 2 in a new preview session. Output the same table, changed rows marked.
+
+Publish and activate {{Agent_Api_Name}}:
+sf agent publish authoring-bundle --json --api-name {{Agent_Api_Name}}
+sf agent activate --json --api-name {{Agent_Api_Name}}
+Then verify the published agent with 3 of the Phase 2 French utterances (one per main action + off_topic):
+sf agent preview start --json --api-name {{Agent_Api_Name}}   (--api-name, not --authoring-bundle)
+If publish fails, stop and show the exact error. Output: publish status, activate status, 3-row result table.
+
+Use agentforce-test. Create a test spec for {{Agent_Api_Name}} at specs/{{Agent_Api_Name}}-testSpec.yaml. Confirm the exact YAML keys in the skill references.
+- 10–12 test cases max: every action, no-result, multiple-match, off_topic, one English input.
+- utterance and expected outcome in French; expected subagent/topic and action names exactly as in the bundle (English).
+- Expected outcome describes behavior, e.g. "L'agent liste les tâches en retard de l'utilisateur et répond en français."
+Show me the spec before creating it. After I approve:
+sf agent test create --json --spec specs/{{Agent_Api_Name}}-testSpec.yaml --api-name {{Agent_Api_Name}}_Tests
+sf agent test run --json --api-name {{Agent_Api_Name}}_Tests --wait 10
+sf agent test results --json --job-id <ID>   (if run timed out)
+Output only: pass rate, then table case | topic ✓/✗ | action ✓/✗ | outcome ✓/✗ | cause for each failure. No passing-case detail.
