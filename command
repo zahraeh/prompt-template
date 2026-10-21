@@ -46,6 +46,8 @@ sf agent adl list > data-libraries.txt 2>&1
 cd ..
 
 
+
+Read CLAUDE.md and HANDOFF.md first… Do the next step.
   
 
 
