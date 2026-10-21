@@ -49,5 +49,6 @@ cd ..
 
 Read CLAUDE.md and HANDOFF.md first… Do the next step.
   
-
+how much tokens are available 
+/context
 
