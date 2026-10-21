@@ -1,0 +1,72 @@
+sf project retrieve start --metadata "AiAgentDefinitionVersion:Maison_Lumiere#6" \
+   --root-type-with-dependencies AiAgentDefinitionVersion -o myOrg
+
+You are helping me debug a Salesforce Agentforce agent. I'm the Forward Deployed Engineer. I just retrieved
+the agent with its dependencies into this project.
+
+## The challenge
+[Paste the customer's complaint here, word for word, in any language]
+
+## Evidence I have so far
+[Paste anything you have: trace lines, Setup Audit Trail entries, active
+version, channel, user type (guest / verified / employee), when it started.
+Write "none yet" if empty]
+
+## What to do
+Work in this order. Do NOT edit any file until I say "go".
+
+1. Map the agent (keep it short):
+   - The Agent Router (start_agent): its transitions and their
+     `available when` conditions
+   - Each subagent: description, actions exposed in reasoning.actions,
+     inputs (bound to a variable or filled by the LLM with `...`)
+   - Variables: which are set by action outputs (`set`), and where
+   - Config block: runtime settings, file_upload, default_agent_user,
+     connection blocks (escalation routes)
+   - Apex classes and flows behind each action: do they filter by the
+     verified customer? `with sharing` or `without sharing`?
+   Cite file name and line for everything.
+
+2. Severity first: tell me in one line whether this looks like a
+   SEV1 (another customer's data exposed, or a wrong action taken),
+   SEV2 (down for everyone), SEV3 (wrong answers for a segment) or
+   SEV4 (tone/format). If SEV1 or SEV2, tell me to contain before
+   anything else (activate the last good version).
+
+3. Hypotheses: give me 2 to 4, ranked, each with:
+   - Layer: channel / agent user & permissions / identity / routing /
+     action & inputs / action execution / grounding / escalation /
+     security
+   - Evidence in the files (file:line) that supports it
+   - How I confirm it in the org (Preview + Trace tab, Variables tab,
+     Debug Logs, Setup Audit Trail, version compare), in one line
+   Check the usual planted bugs explicitly: protected inputs not bound
+   to the verified ID, missing `available when` gates, `set` lines
+   missing after verification, actions defined but not in
+   reasoning.actions, overlapping descriptions, reset_to_initial_node,
+   missing escalation route, Apex without sharing or without an
+   ownership filter.
+
+4. What you can't see: list what these files can't tell us (agent
+   user's permission sets, Omni-Channel flow, Knowledge publish status,
+   real session traces) and what I should check in the org for each.
+
+5. Fix plan, step by step:
+   - Smallest change first, one change per step
+   - Exact before/after code for each change
+   - Done in a new draft version, never the active one
+   - The command to validate each step:
+     sf agent validate authoring-bundle --api-name <name> -o myOrg
+
+6. Test pack to prove it: the original message, 3 rewordings, one case
+   that should NOT change (e.g. a guest asking store hours), one
+   injection attempt, one multi-turn conversation. Write them as
+   messages I can paste into Preview.
+
+7. Two sentences I can say to a non-technical business owner: what
+   broke and what we're changing.
+
+Be concise: I'm under time pressure. If you're unsure about a Salesforce
+feature or syntax, say so instead of guessing.
+
+
