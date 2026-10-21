@@ -19,4 +19,12 @@ sf sobject describe --sobject Task -o myOrg       # fields, picklists, relations
 
 look at what is already available 
 
-sf data query -o myOrg -q "SELECT MasterLabel, TotalLicenses FROM PermissionSetLicense ORDER BY MasterLabel"
+# 1. Licenses (what features exist)
+sf data query -o yourOrg -q "SELECT MasterLabel, TotalLicenses FROM PermissionSetLicense ORDER BY MasterLabel" > licenses.txt
+
+# 2. Record counts (what's actually set up with data)
+sf api request rest "/services/data/v62.0/limits/recordCount" -o yourOrg > recordcounts.txt
+
+# 3. Existing flows (logic you can turn into agent actions)
+sf data query -o yourOrg -q "SELECT ApiName, Label, ProcessType FROM FlowDefinitionView WHERE IsActive = true ORDER BY Label" > flows.txt
+
