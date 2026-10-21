@@ -1,0 +1,42 @@
+git add -A && git commit -qm "v1 working" && git tag v1
+git checkout -b v2
+CHANGE REQUEST. v1 of {{Agent_Api_Name}} is deployed and working (git tag v1). Do not modify, deploy or publish anything yet.
+
+Stakeholder change (verbatim):
+{{paste the new requirement}}
+
+Using CLAUDE.md, .inventory/*, the bundle and specs/{{Agent_Api_Name}}-testSpec.yaml, output ONLY:
+
+A) IMPACT — table: Item (subagent / action / flow / field / instruction / test case) | Change: KEEP / MODIFY / ADD / REMOVE | Why (one line)
+Check reuse first (standard action > existing flow > invocable Apex) for anything ADD.
+
+B) VERSIONING — confirm in the agentforce-generate skill references how to ship a new version without overwriting v1, then state which you'll use:
+- new version of the same agent (v1 stays restorable), or
+- a separate bundle {{Agent_Api_Name}}_v2 if versions aren't supported for authoring bundles.
+Flows: never edit a v1 flow in place; changed logic goes in a new flow suffixed _v2.
+
+C) PLAN — numbered steps with the exact files and the exact deploy commands (only changed metadata).
+
+D) TESTS — which of the 5 spec cases change, plus at most 3 new French cases for the new behavior.
+
+E) RISKS / QUESTIONS — max 3 lines. Anything ambiguous in the change: ask, don't guess.
+
+Keep it under 40 lines. Same LANGUAGE rules as v1: French user-facing text, English ASCII API names.
+
+
+Approved{{, with: <answers to E>}}. Build v2 exactly as planned. If a step fails, fix and retry up to 2 times without asking; stop if still failing. Then validate, deploy only changed metadata, and smoke-test only the changed and new cases in one preview session with live actions. Update the test spec. Don't publish or activate. Output: steps done, 1 table case | PASS/FAIL, max 10 lines.
+
+git add -A && git commit -qm "v2" && git tag v2
+sf agent publish authoring-bundle --api-name <v2 bundle name from the plan>
+sf agent activate --api-name <v2 agent name>
+sf agent test run --api-name {{Agent_Api_Name}}_Tests --wait 10   # only if regression is scored
+
+
+
+Roll back if v2 breaks during the demo: sf agent deactivate --api-name <v2> 
+then sf agent activate --api-name {{Agent_Api_Name}} (separate-bundle case), 
+or reactivate version 1 in Agentforce Builder (same-agent case). Code: git checkout v1.
+
+
+
+
