@@ -1,0 +1,35 @@
+PHASE 0 v2 — EXPANSION REUSE CHECK (read-only). Do not create, edit, or deploy anything. Do not run sf agent preview, sf agent test, or anything that calls the LLM in the org.
+
+BASELINE (v1, already built and working — do not redesign it):
+- Agent: {{Agent Label}} / {{Agent_Api_Name}}, type {{Employee|Service}}, locale {{fr / fr_FR}}
+- Subagents + router descriptions: {{list}}
+- Actions: {{Action_Name | REUSE/NEW API name | Inputs | Returns}} (one per line)
+- Objects/fields in use: {{list}}
+- Deferred from v1: {{R4.., anything parked}}
+
+EXPANSION GOAL (3-6 lines): {{what new user journeys v2 must cover, new data, new constraints}}
+
+STEP 1 — Delta requirements. List only NEW capabilities as R4..Rn (max 5), one capability each. Pull deferred v1 items in first if they fit the goal. Flag any requirement that changes an existing v1 capability as "MODIFY Rx" instead of new.
+
+STEP 2 — Reuse check, cheapest source first. Check v1's own actions and flows FIRST, then .inventory/*, then the same allowed read-only commands as v1 (describe only newly needed objects). Also check agentforce-generate skill references for standard actions.
+
+STEP 3 — Output ONLY these four blocks, no prose:
+
+A) DELTA REUSE MAP — Req | Reuse candidate (v1 action / standard / flow / Apex / prompt template) | Fit | What's missing
+Same preference order as v1. Mark standard actions "verify in Asset Library" if unconfirmed.
+
+B) DECISIONS:
+- Version strategy: new version of {{Agent_Api_Name}} vs. separate agent, one line why
+- Subagent plan: extend an existing subagent or add a new one, per requirement
+- Router overlap: for each new subagent, which v1 subagent it could be confused with, and the wording that separates them
+- Write actions (create/update/delete): which ones, and the confirmation step before executing
+- New objects/fields/picklist values (exact API names); anything missing in the org: flag, don't build
+- Permissions: what the agent user / permission set needs added
+
+C) FILLED VALUES — only new or changed items:
+Subagents (new/updated router descriptions, French), and per action:
+Action_Name | REUSE <API name> or NEW Flow_Name | Inputs | Returns | Change vs v1 (new/modified/unchanged)
+
+D) REGRESSION SET (do not run) — 2 French test utterances per v1 subagent that must still route correctly, plus 2 per new subagent, with expected subagent + action.
+
+Keep the whole answer under 70 lines.
