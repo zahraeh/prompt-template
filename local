@@ -6,8 +6,14 @@ mkdir -p ~/Projects/MyProject
 unzip ~/Downloads/MyProject.zip -d ~/Projects/MyProject
 Open the folder in VS
 install the skills 
-
-
+npx skills add forcedotcom/sf-skills
+agentforce-generate
+gentforce-observe
+agentforce-test 
+automation-flow-generate
+platform-metadata-api-context-get
+platform-metadata-deploy
+platform-metadata-retrieve
 
 sf org login web --alias MyOrg
 
