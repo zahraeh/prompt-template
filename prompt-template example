@@ -1,0 +1,44 @@
+I want to build an Agentforce Employee Agent called 'To-Do Manager' that helps users create, list, and complete to-dos using the standard Salesforce Task object.
+
+Here is the full specification. Build exactly this — do not add extra subagents, do not use a custom object, and do not include any service agent boilerplate like default_agent_user, MessagingSession variables, or escalation subagents.
+
+AGENT ARCHITECTURE:
+Type: AgentforceEmployeeAgent
+API name: To_Do_Manager
+One start_agent router
+One subagent: to_do_management
+One off-topic handler: off_topic
+
+ROUTER DESCRIPTION: The router should classify user intent into one of two paths:
+to_do_management: route here for anything related to creating tasks, listing tasks, or marking tasks complete
+off_topic: route here for anything unrelated to task management
+
+DATA MODEL: Use the standard Salesforce Task object. The relevant fields are:
+Subject (the task title)
+Status (values: Not Started, In Progress, Completed)
+Description (optional detail)
+ActivityDate (optional due date)
+
+SUBAGENT: to_do_management This subagent handles all task management. It has three actions, each backed by a separate Auto-launched Flow:
+Action 1 — Create_To_Do Flow name: Create_To_Do Inputs: Subject (required), Description (optional), ActivityDate (optional) Creates a new Task record with Status = "Not Started"
+Action 2 — List_To_Dos Flow name: List_To_Dos Inputs: Status (optional — if provided, filter by this status; if not, return all open tasks) Returns a collection of Task records with Subject, Status, and ActivityDate
+Action 3 — Complete_To_Do Flow name: Complete_To_Do Inputs: Subject (required — use this to look up the task) Updates the matching Task record Status to "Completed"
+
+SUBAGENT INSTRUCTIONS for to_do_management:
+Always call the appropriate action immediately when the user's intent is clear
+For Create_To_Do: call it as soon as you have a Subject — do not ask for optional fields unless the user offers them
+For List_To_Dos: call it with no inputs to return all tasks unless the user specifies a status
+For Complete_To_Do: call it as soon as you have enough information to identify the task
+
+OFF_TOPIC HANDLER: Politely tell the user this agent only helps with managing to-dos and tasks, and decline to answer anything else.
+
+FLOWS: Each flow should be an Auto-launched Flow with no trigger. Use Assignment elements to copy SObject field values into intermediate String variables before using them — do not chain SObject field references directly. Group all elements of the same type together contiguously in the XML rather than interleaving them — Salesforce's Flow XML schema rejects interleaved element types. All element X coordinates must be 0 or greater.
+
+DEPLOYMENT (Phase 1 — build, validate, and deploy only):
+sf agent validate authoring-bundle --json --api-name To_Do_Manager
+sf project deploy start --json --metadata Flow
+sf project deploy start --json --metadata AiAuthoringBundle:To_Do_Manager
+
+Stop after Phase 1 completes. Do NOT run sf agent publish or sf agent activate yet — I want to test the agent against the deployed bundle first.
+
+Before writing any files, read the agentforce-generate skill's reference files to confirm exact current syntax. Present a plan first. Do not generate any files until I approve.
