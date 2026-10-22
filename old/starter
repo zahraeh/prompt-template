@@ -1,0 +1,70 @@
+Prompt 1: Understand the starter code (after you deploy it)
+Read-only on the org: do not deploy, create, or modify anything there, and do not run sf agent preview or sf agent test. You may only write files under .inventory/.
+
+1. Read the README, any docs, and sfdx-project.json. List what the project contains: custom objects and fields, flows (name, type, active or not), Apex classes (flag @InvocableMethod), agent bundles (aiAuthoringBundles), prompt templates, and any seed data.
+2. Run only these org queries:
+- sf data query -q "SELECT LanguageLocaleKey FROM Organization"
+- sf data query -q "SELECT MasterLabel FROM PermissionSetLicense WHERE Status='Active'"
+- sf data query -q "SELECT DeveloperName, MasterLabel FROM BotDefinition"
+- sf data query -q "SELECT ApiName, ProcessType FROM FlowDefinitionView WHERE IsActive = true"
+- SELECT COUNT() for each custom object found (max 5)
+3. Save the results as text files in .inventory/.
+
+Output only, under 40 lines:
+A) Is there an agent already? (none / partial in project / already in org) + its API name
+B) What the starter gives me: objects, flows, Apex actions, agent subagents/actions
+C) Red flags: empty objects, inactive flows, TODOs, hints in the README
+Prompt 2: Plan and build (after the challenge is revealed)
+CHALLENGE (summary):
+{{3–6 lines in your own words: who the users are, what they need to do, which data, constraints}}
+
+Use .inventory/* and the existing project. Read the agentforce-generate skill references to confirm syntax. Do not write any files until I approve.
+
+1. Split the challenge into max 5 requirements (core user journey only).
+2. Table: Requirement | What already covers it (subagent / action / flow / Apex) | DONE / MODIFY / NEW | What to change
+3. Plan per subagent: Action | KEEP / MODIFY / NEW | Source | Inputs | Returns
+
+Rules:
+- If an agent exists, extend it and keep all existing API names. If none exists, create one named {{Agent_Api_Name}}.
+- Reuse starter flows, Apex and standard actions before creating new ones.
+- No new objects or fields unless unavoidable; flag them instead.
+- Users speak French: all user-facing text in French, API names in English (ASCII), never translate picklist values.
+- Off-topic requests get a fixed French reply.
+
+STOP and wait for my approval.
+
+After I approve: edit only what's marked MODIFY or NEW, run sf agent validate authoring-bundle, then deploy only the changed components (flows, then AiAuthoringBundle). If anything fails, stop and show me the exact error with a proposed fix. Do NOT publish or activate.
+Prompt 3: Smoke test
+Smoke-test the deployed bundle {{Agent_Api_Name}} with live actions:
+sf agent preview start --json --use-live-actions --authoring-bundle {{Agent_Api_Name}}
+then sf agent preview send for each utterance, then sf agent preview end.
+(If a flag is rejected, check --help and adapt.)
+
+First run one sf data query --json "SELECT ... LIMIT 20" to get real record values. Never invent names. If no records come back, stop and tell me.
+
+Max 8 utterances, in French, as real users write:
+- one per action (formal)
+- one informal or with a typo
+- one with no results, one with multiple matches
+- one off-topic: "Quel temps fait-il à Paris ?"
+- one in English, to check the agent still replies in French
+
+Pass = right subagent, right action, reply in French, fixed texts match exactly.
+Output only: table # | utterance | subagent | action | French? | PASS/FAIL | cause. Then one proposed fix per FAIL. Don't change files yet.
+Prompt 4: Fix and re-test
+Apply the fixes you proposed. Deploy only what changed, validate the bundle, then re-run the full smoke test list in a new preview session. Output the same table, with changed rows marked.
+(Repeat until everything passes, or you’re happy with it.)
+Prompt 5: Publish and activate
+Show me what you're about to publish and wait for my OK. Then:
+sf agent publish authoring-bundle --json --api-name {{Agent_Api_Name}}
+sf agent activate --json --api-name {{Agent_Api_Name}}
+Then verify with 3 utterances from the smoke test (one per main action + off-topic):
+sf agent preview start --json --api-name {{Agent_Api_Name}}
+If publish fails, stop and show the exact error.
+Output: publish status, activate status, 3-row results table.
+Prompt 6 (optional, if you have time): Formal test suite
+Create a test spec for {{Agent_Api_Name}} at specs/{{Agent_Api_Name}}-testSpec.yaml (confirm the YAML keys in the skill references). 10–12 cases: every action, no-result, multiple-match, off-topic, one English input. Utterances and expected outcomes in French; subagent and action names exactly as in the bundle.
+Show me the spec first. After I approve, create and run it:
+sf agent test create --json --spec specs/{{Agent_Api_Name}}-testSpec.yaml --api-name {{Agent_Api_Name}}_Tests
+sf agent test run --json --api-name {{Agent_Api_Name}}_Tests --wait 10
+Output only: pass rate, and a table of failures with the cause.
